@@ -29,6 +29,7 @@ gcc
 clang
 cmake
 raylib
+glibc
 
           ];
         };

@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef struct {
   int width;
@@ -16,7 +17,66 @@ typedef struct {
   float planeY;
 } Player;
 
-int asd[10] = {1, 2, 3, 1, 3, 2, 1, 2, 1, 2};
+Player player;
+
+#define MAPHEIGHT 25
+#define MAPWIDTH 25
+
+int map[MAPHEIGHT][MAPWIDTH] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+
+};
+
+void drawDebug() {
+  DrawRectangle(0, 0, 200, 100, RAYWHITE);
+  DrawFPS(10, 10);
+  DrawText(TextFormat("player:\n\nx:%.1f | y:%.1f", player.pos.x, player.pos.y),
+           10, 30, 25, DARKGREEN);
+}
+
+void gameLoop() {
+  for (int y = 0; y < MAPHEIGHT; y++) {
+    for (int x = 0; x < MAPWIDTH; x++) {
+      Color color;
+      switch (map[y][x]) {
+      case 1:
+        color = RAYWHITE;
+        break;
+      case 2:
+        color = RED;
+        break;
+      case 3:
+        color = GREEN;
+        break;
+      }
+      ClearBackground(color);
+    }
+  }
+}
 
 void initWindow() {
   int monitor = GetCurrentMonitor();
@@ -30,32 +90,29 @@ void initWindow() {
   SetTargetFPS(30);
 }
 
-int main(void) {
+int main(int argc, char **argv) {
   initWindow();
+
+  // debug stuff
+  bool debug = false;
+  if (argc == 2)
+    if (strcmp(argv[1], " -d"))
+      debug = true;
+
+  player.pos.x = 5;
+  player.pos.y = 20;
+  player.dir.x = 0;
+  player.dir.y = 0;
 
   while (!WindowShouldClose()) {
     BeginDrawing();
 
-    ClearBackground(RAYWHITE);
+    ClearBackground(BLACK);
 
-    for (int i = 0; i < (int)(sizeof(asd) / sizeof(int)); i++) {
-      Color color;
-      switch (asd[i]) {
-      case 1:
-        color = RED;
-        break;
-      case 2:
-        color = GREEN;
-        break;
-      case 3:
-        color = YELLOW;
-        break;
-      default:
-        color = PURPLE;
-        break;
-      }
+    gameLoop();
 
-      DrawRectangle(30 * i, 0, 30, GetScreenHeight(), color);
+    if (debug == true) {
+      drawDebug();
     }
 
     EndDrawing();

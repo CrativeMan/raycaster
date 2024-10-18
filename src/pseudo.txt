@@ -1,0 +1,8 @@
+dist, wall shootRay(vertLine)
+
+
+gameLoop()
+  for verticalLine in screen:
+    dist, wall = shootRay(verticalLine)
+    drawHeight = translateDistToHeight(dist)
+    color = translateWallToColor(wall)
